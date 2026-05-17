@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MCU PYQ — High-Repeat Questions</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0a0c10;
@@ -13,7 +13,7 @@
     --accent: #00e5a0;
     --accent2: #ff6b35;
     --accent3: #7c6fff;
-    --text: #d4dbe8;
+    --text: #dde6f5;
     --muted: #5a6478;
     --code-bg: #0d1117;
   }
@@ -23,9 +23,11 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Syne', sans-serif;
+    font-family: 'Inter', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
   }
 
   /* GRID BACKGROUND */
@@ -70,20 +72,21 @@
   }
 
   h1 {
-    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
     font-weight: 800;
-    line-height: 1.1;
+    line-height: 1.15;
     color: #fff;
     margin-bottom: 12px;
+    letter-spacing: -0.02em;
   }
 
   h1 span { color: var(--accent); }
 
   .subtitle {
     color: var(--muted);
-    font-size: 15px;
+    font-size: 14px;
     font-family: 'JetBrains Mono', monospace;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.03em;
   }
 
   .stats-row {
@@ -141,13 +144,14 @@
   }
 
   .toc-list li a {
-    color: var(--text);
+    color: #c9d6f0;
     text-decoration: none;
-    font-size: 13px;
+    font-size: 14px;
     display: flex;
     align-items: center;
     gap: 8px;
     transition: color 0.2s;
+    font-family: 'Inter', sans-serif;
   }
 
   .toc-list li a:hover { color: var(--accent); }
@@ -195,11 +199,12 @@
   .q-title-wrap { flex: 1; }
 
   .q-title {
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 600;
     color: #fff;
-    line-height: 1.4;
+    line-height: 1.45;
     margin-bottom: 6px;
+    letter-spacing: -0.01em;
   }
 
   .q-meta {
@@ -269,15 +274,15 @@
     border: 1px solid var(--border);
     border-radius: 4px;
     padding: 16px 18px;
-    font-size: 14px;
-    line-height: 1.7;
-    color: var(--text);
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: #e0e8ff;
   }
 
   .answer-text {
-    font-size: 14px;
-    line-height: 1.8;
-    color: #bcc5d6;
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: #ccd6f6;
   }
 
   .answer-text p { margin-bottom: 12px; }
@@ -288,6 +293,7 @@
   pre, code {
     font-family: 'JetBrains Mono', monospace;
     font-size: 13px;
+    line-height: 1.65;
   }
 
   pre {
@@ -298,8 +304,7 @@
     padding: 16px 18px;
     overflow-x: auto;
     margin: 14px 0;
-    line-height: 1.6;
-    color: #c9d1d9;
+    color: #e2e8f5;
   }
 
   code {
@@ -343,8 +348,8 @@
   table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 13px;
-    font-family: 'JetBrains Mono', monospace;
+    font-size: 13.5px;
+    font-family: 'Inter', sans-serif;
     margin: 12px 0;
   }
 
@@ -455,22 +460,14 @@
         <div class="answer-text">
           <p>A 32-bit number spans two 16-bit words. Low word at base address, high word at base+2. We use <strong>ADD</strong> for the low 16 bits and <strong>ADDC</strong> (Add with Carry) for the high 16 bits to propagate the carry.</p>
           <pre>
-; Load low 16 bits of first operand (0x0220) into R4
 MOV.W   &0x0220, R4
-; Load low 16 bits of second operand (0x0224) into R5
 MOV.W   &0x0224, R5
-; Add low words — carry flag set if result overflows 16 bits
 ADD.W   R5, R4
-; Store low 16 bits of result
 MOV.W   R4, &0x0228
 
-; Load high 16 bits of first operand (0x0222)
 MOV.W   &0x0222, R4
-; Load high 16 bits of second operand (0x0226)
 MOV.W   &0x0226, R5
-; Add high words + carry from previous ADD
 ADDC.W  R5, R4
-; Store high 16 bits of result
 MOV.W   R4, &0x022A</pre>
           <div class="highlight-box">
             <div class="hl-title">Key Points</div>
@@ -562,44 +559,35 @@ What are the values of N, Z, C, V bits and R8 after line 3 and line 5?
         <div class="answer-text">
           <p>MSP430 has no hardware MUL instruction in the base architecture — multiply is done by repeated addition. We must save/restore registers to keep them unchanged.</p>
           <pre>
-; ========== _MULT Subroutine ==========
-; Input:  R10 (multiplicand), R11 (multiplier)
-; Output: R10 = R10 * R11
-; Preserves: R11, R12 (used internally, saved via stack)
 _MULT:
-    PUSH    R11         ; save R11
-    PUSH    R12         ; save R12
-    MOV     R10, R12    ; R12 = original multiplicand (addend)
-    CLR     R10         ; R10 = accumulator = 0
+    PUSH    R11
+    PUSH    R12
+    MOV     R10, R12
+    CLR     R10
 MULT_LOOP:
-    CMP     #0, R11     ; if multiplier = 0, done
+    CMP     #0, R11
     JZ      MULT_DONE
-    ADD     R12, R10    ; accumulator += multiplicand
-    DEC     R11         ; multiplier--
+    ADD     R12, R10
+    DEC     R11
     JMP     MULT_LOOP
 MULT_DONE:
     POP     R12
     POP     R11
     RET
 
-; ========== Main Code ==========
-    ; Load X and Y
-    MOV.W   &Data_X, R7    ; R7 = X
-    MOV.W   &Data_Y, R8    ; R8 = Y
+    MOV.W   &Data_X, R7
+    MOV.W   &Data_Y, R8
 
-    ; Compute X*2
     MOV     R7, R10
     MOV     #2, R11
-    CALL    #_MULT          ; R10 = X*2
-    MOV     R10, R13        ; R13 = X*2 (partial Z)
+    CALL    #_MULT
+    MOV     R10, R13
 
-    ; Compute Y*4
     MOV     R8, R10
     MOV     #4, R11
-    CALL    #_MULT          ; R10 = Y*4
+    CALL    #_MULT
 
-    ; Z = X*2 + Y*4
-    ADD     R10, R13        ; R13 = Z</pre>
+    ADD     R10, R13</pre>
           <div class="highlight-box">
             <div class="hl-title">Tip</div>
             Since X and Y are small (&lt;100), the repeated-addition loop is fast and no overflow occurs in 16-bit registers.
@@ -640,49 +628,41 @@ MULT_DONE:
           <pre>
 #include "msp430g2553.h"
 
-// LED on P1.0, Columns on P2.0-P2.1, Rows on P2.2-P2.3
-
 void AppPortInit(void) {
-    // LED as output, initially OFF
     P1DIR |= BIT0;
     P1OUT &= ~BIT0;
 
-    // Columns P2.0, P2.1 as outputs
     P2DIR |= (BIT0 | BIT1);
-    P2OUT |= (BIT0 | BIT1);   // drive HIGH initially
+    P2OUT |= (BIT0 | BIT1);
 
-    // Rows P2.2, P2.3 as inputs with pull-up resistors
     P2DIR &= ~(BIT2 | BIT3);
-    P2REN |= (BIT2 | BIT3);   // enable pull resistors
-    P2OUT |= (BIT2 | BIT3);   // select pull-UP
+    P2REN |= (BIT2 | BIT3);
+    P2OUT |= (BIT2 | BIT3);
 }
 
 unsigned char keypadRead(void) {
-    unsigned char key = 0xFF; // default: no key
+    unsigned char key = 0xFF;
 
-    // Drive Column 1 LOW, Column 2 HIGH
     P2OUT &= ~BIT0;
     P2OUT |=  BIT1;
-    __delay_cycles(100);  // settle time
+    __delay_cycles(100);
 
-    if (!(P2IN & BIT2)) key = 0x01;  // Key 1 (R1,C1)
-    if (!(P2IN & BIT3)) key = 0x03;  // Key 3 (R2,C1)
+    if (!(P2IN & BIT2)) key = 0x01;
+    if (!(P2IN & BIT3)) key = 0x03;
 
-    // Drive Column 2 LOW, Column 1 HIGH
     P2OUT |=  BIT0;
     P2OUT &= ~BIT1;
     __delay_cycles(100);
 
-    if (!(P2IN & BIT2)) key = 0x02;  // Key 2 (R1,C2)
-    if (!(P2IN & BIT3)) key = 0x04;  // Key 4 (R2,C2)
+    if (!(P2IN & BIT2)) key = 0x02;
+    if (!(P2IN & BIT3)) key = 0x04;
 
-    // Restore both columns HIGH
     P2OUT |= (BIT0 | BIT1);
     return key;
 }
 
 void toggleLED(void) {
-    P1OUT ^= BIT0;  // XOR toggles BIT0
+    P1OUT ^= BIT0;
 }
 
 int main(void) {
@@ -691,7 +671,7 @@ int main(void) {
     while (1) {
         if (keypadRead() == 0x01) {
             toggleLED();
-            __delay_cycles(200000); // debounce
+            __delay_cycles(200000);
         }
     }
 }</pre>
@@ -730,36 +710,29 @@ Door sensor on P1.1 (1 = open, 0 = closed). Buzzer on P1.7. Generate 100Hz squar
 void main(void) {
     WDTCTL = WDTPW + WDTHOLD;
 
-    // a) Port Initialisation
-    P1DIR &= ~BIT1;   // P1.1 = door sensor INPUT
-    P1DIR |=  BIT7;   // P1.7 = buzzer OUTPUT
-    P1OUT &= ~BIT7;   // buzzer OFF initially
+    P1DIR &= ~BIT1;
+    P1DIR |=  BIT7;
+    P1OUT &= ~BIT7;
 
-    // b) Timer A0 Config (Up mode, SMCLK, CCR0=4999 → 5ms)
-    TA0CCR0  = 4999;                     // 5ms at 1MHz
-    TA0CCTL0 = CCIE;                     // enable CCR0 interrupt
-    // Timer NOT started yet (MC bits = 00 by default)
-    TA0CTL   = TASSEL_2 | ID_0;         // SMCLK, /1, timer stopped
+    TA0CCR0  = 4999;
+    TA0CCTL0 = CCIE;
+    TA0CTL   = TASSEL_2 | ID_0;
 
-    __bis_SR_register(GIE);             // enable global interrupts
+    __bis_SR_register(GIE);
 
-    // c) Main loop: start/stop timer based on door
     while (1) {
         if (P1IN & BIT1) {
-            // Door OPEN → start timer (Up mode)
             TA0CTL |= MC_1;
         } else {
-            // Door CLOSED → stop timer, turn buzzer OFF
-            TA0CTL &= ~MC_3;    // MC = 00 (stop)
-            P1OUT  &= ~BIT7;    // ensure buzzer off
+            TA0CTL &= ~MC_3;
+            P1OUT  &= ~BIT7;
         }
     }
 }
 
-// d) Timer A0 ISR — fires every 5ms
 #pragma vector = TIMER0_A0_VECTOR
 __interrupt void Timer0_A0_ISR(void) {
-    P1OUT ^= BIT7;   // toggle buzzer → 100Hz square wave
+    P1OUT ^= BIT7;
 }</pre>
         </div>
       </div>
@@ -799,15 +772,10 @@ WDT enabled with SMCLK 1MHz, default count 32768. LED toggled in while loop usin
           <p>So the LED doesn't toggle correctly — the CPU keeps resetting.</p>
           <p><strong>2) Fix:</strong> The WDT interrupt handler must periodically <strong>kick (reset) the WDT counter</strong>, OR the WDT should be re-enabled in the ISR. The fix is to add WDT reset inside the ISR:</p>
           <pre>
-// Fix 1: Kick WDT in ISR to prevent reset
 #pragma vector = WDT_VECTOR
 __interrupt void WDT_ISR(void) {
-    WDTCTL = WDTPW + WDTCNTCL;  // reset WDT counter
-}
-
-// Fix 2: Alternatively, disable WDT and use it only as interval timer
-// Change: WDTCTL = WDTPW + WDTHOLD;  (just disable it)
-// And use a simple __delay_cycles() for the delay</pre>
+    WDTCTL = WDTPW + WDTCNTCL;
+}</pre>
           <div class="highlight-box">
             <div class="hl-title">Root Cause Summary</div>
             If delay_func() takes longer than 32.768ms, WDT fires first and resets the CPU. The code enables WDTIE and GIE, so WDT ISR fires — but without kicking the WDT counter, a subsequent timeout causes a PUC (reset).
@@ -859,10 +827,10 @@ Evaluate the following code (correct or incorrect with reason):
             <div class="hl-title">Corrected Code</div>
             <pre style="margin:0;">
 POLL:
-    MOV.W  0(R6), R4    ; correctly read 16-bit status
-    CMP    #30, R4      ; compare with 30d
-    JNE    POLL         ; loop if not equal
-    MOV.B  2(R6), R8    ; load byte from R6+2</pre>
+    MOV.W  0(R6), R4
+    CMP    #30, R4
+    JNE    POLL
+    MOV.B  2(R6), R8</pre>
           </div>
         </div>
       </div>
@@ -995,14 +963,14 @@ Servo: −90° to +90° in 10° steps, stop 1s each. PWM freq 50Hz. −90°=1ms,
           <p><strong>3) Output Mode:</strong> <strong>Reset/Set (Mode 7)</strong> — output goes HIGH when TAR counts up to TA0CCR1, LOW when counting back down past CCR1. This generates the PWM pulse.</p>
           <p><strong>4) Code Loop:</strong></p>
           <pre>
-int ccr1 = 8000;       // start at -90 degrees
-int step = 444;        // counts per 10 degrees
+int ccr1 = 8000;
+int step = 444;
 
 while (1) {
-    TA0CCR1 = ccr1;    // set pulse width
-    Delay_1s();        // wait 1 second at this position
-    ccr1 += step;      // increment to next angle
-    if (ccr1 > 16000) break; // stop at +90 degrees
+    TA0CCR1 = ccr1;
+    Delay_1s();
+    ccr1 += step;
+    if (ccr1 > 16000) break;
 }</pre>
         </div>
       </div>
@@ -1141,36 +1109,29 @@ Stepper motor in two-coil excitation (high torque, two phase). Coils connected v
           <pre>
 #include "msp430g2553.h"
 
-// Stepper sequence on upper nibble: P1.7 P1.6 P1.5 P1.4
-// Sequence bits (4-bit): 1001, 0011, 0110, 1100
-// Shifted to upper nibble (×16): 0x90, 0x30, 0x60, 0xC0
-
 const unsigned char step_seq[4] = {0x90, 0x30, 0x60, 0xC0};
 
 void delay_ms(unsigned int ms) {
     unsigned int i;
     for (i = 0; i < ms; i++)
-        __delay_cycles(1000); // 1MHz: 1000 cycles = 1ms
+        __delay_cycles(1000);
 }
 
 int main(void) {
     WDTCTL = WDTPW + WDTHOLD;
 
-    // Initialise P1.7–P1.4 as outputs
     P1DIR |= (BIT7 | BIT6 | BIT5 | BIT4);
-    P1OUT &= ~(BIT7 | BIT6 | BIT5 | BIT4); // all OFF
+    P1OUT &= ~(BIT7 | BIT6 | BIT5 | BIT4);
 
     int rotation, step;
 
     for (rotation = 0; rotation < 100; rotation++) {
         for (step = 0; step < 4; step++) {
-            // Clear upper nibble, set new step
             P1OUT = (P1OUT & 0x0F) | step_seq[step];
-            delay_ms(10); // step delay
+            delay_ms(10);
         }
     }
 
-    // Turn off coils after done
     P1OUT &= 0x0F;
     return 0;
 }</pre>
