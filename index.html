@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCU PYQ — High-Repeat Questions</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --border: #1e2330;
+    --accent: #00e5a0;
+    --accent2: #ff6b35;
+    --accent3: #7c6fff;
+    --text: #d4dbe8;
+    --muted: #5a6478;
+    --code-bg: #0d1117;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  header {
+    padding: 60px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 3px 10px;
+    border-radius: 2px;
+    letter-spacing: 0.15em;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 32px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-num {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent3);
+    border-radius: 4px;
+    padding: 24px 28px;
+    margin-bottom: 48px;
+  }
+
+  .toc-title {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent3);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 14px;
+  }
+
+  .toc-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 24px;
+  }
+
+  .toc-list li a {
+    color: var(--text);
+    text-decoration: none;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+
+  .toc-list li a:hover { color: var(--accent); }
+
+  .toc-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    min-width: 20px;
+  }
+
+  /* QUESTION CARD */
+  .q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 32px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .q-card:hover { border-color: #2a3148; }
+
+  .q-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 22px 28px 18px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(0,229,160,0.08);
+    border: 1px solid rgba(0,229,160,0.2);
+    padding: 3px 8px;
+    border-radius: 2px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+  .q-title-wrap { flex: 1; }
+
+  .q-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.4;
+    margin-bottom: 6px;
+  }
+
+  .q-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .badge-paper {
+    background: rgba(124,111,255,0.12);
+    color: var(--accent3);
+    border: 1px solid rgba(124,111,255,0.25);
+  }
+
+  .badge-marks {
+    background: rgba(255,107,53,0.1);
+    color: var(--accent2);
+    border: 1px solid rgba(255,107,53,0.2);
+  }
+
+  .chevron {
+    color: var(--muted);
+    font-size: 18px;
+    transition: transform 0.3s;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .q-card.open .chevron { transform: rotate(180deg); }
+  .q-card.open { border-color: rgba(0,229,160,0.2); }
+
+  .q-body {
+    display: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .q-card.open .q-body { display: block; }
+
+  .section {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section:last-child { border-bottom: none; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 10px;
+  }
+
+  .question-text {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px 18px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .answer-text {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #bcc5d6;
+  }
+
+  .answer-text p { margin-bottom: 12px; }
+  .answer-text p:last-child { margin-bottom: 0; }
+
+  .answer-text strong { color: var(--accent); font-weight: 600; }
+
+  pre, code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    margin: 14px 0;
+    line-height: 1.6;
+    color: #c9d1d9;
+  }
+
+  code {
+    background: rgba(0,229,160,0.08);
+    color: var(--accent);
+    padding: 1px 5px;
+    border-radius: 2px;
+  }
+
+  pre code {
+    background: none;
+    color: inherit;
+    padding: 0;
+  }
+
+  .answer-text ol, .answer-text ul {
+    padding-left: 20px;
+    margin-bottom: 12px;
+  }
+
+  .answer-text li { margin-bottom: 6px; }
+
+  .highlight-box {
+    background: rgba(0,229,160,0.05);
+    border: 1px solid rgba(0,229,160,0.15);
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin: 12px 0;
+    font-size: 13px;
+  }
+
+  .highlight-box .hl-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    font-family: 'JetBrains Mono', monospace;
+    margin: 12px 0;
+  }
+
+  th {
+    background: rgba(0,229,160,0.08);
+    color: var(--accent);
+    padding: 8px 12px;
+    text-align: left;
+    border: 1px solid var(--border);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  td {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  /* SECTION DIVIDER */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 48px 0 24px;
+  }
+
+  .section-divider-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    white-space: nowrap;
+  }
+
+  .section-divider-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  @media (max-width: 600px) {
+    .toc-list { grid-template-columns: 1fr; }
+    .q-header { padding: 16px 18px; }
+    .section { padding: 16px 18px; }
+    .stats-row { gap: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="tag">UE__EE252B · Micro-controllers · PES University</div>
+    <h1>High-Repeat <span>PYQ</span> Compendium</h1>
+    <p class="subtitle">// Questions that appeared across 3–4 ESA papers with full answers</p>
+    <div class="stats-row">
+      <div class="stat"><span class="stat-num">5</span><span class="stat-label">ESA Papers</span></div>
+      <div class="stat"><span class="stat-num">13</span><span class="stat-label">Repeat Questions</span></div>
+      <div class="stat"><span class="stat-num">~70</span><span class="stat-label">Marks Coverage</span></div>
+    </div>
+  </header>
+
+  <div class="toc">
+    <div class="toc-title">// Table of Contents</div>
+    <ul class="toc-list">
+      <li><a href="#q1"><span class="toc-num">01</span> 32-bit Addition (MSP430 ASM)</a></li>
+      <li><a href="#q2"><span class="toc-num">02</span> N,Z,C,V Flags + R8 Trace</a></li>
+      <li><a href="#q3"><span class="toc-num">03</span> MULT Subroutine + Z=X²+Y*4</a></li>
+      <li><a href="#q4"><span class="toc-num">04</span> 2x2 Keypad + LED Toggle</a></li>
+      <li><a href="#q5"><span class="toc-num">05</span> Door Sensor + Buzzer (Timer A)</a></li>
+      <li><a href="#q6"><span class="toc-num">06</span> WDT LED Toggle Analysis</a></li>
+      <li><a href="#q7"><span class="toc-num">07</span> Peripheral Polling Bug</a></li>
+      <li><a href="#q8"><span class="toc-num">08</span> loop_out/loop_in Address + Cycles</a></li>
+      <li><a href="#q9"><span class="toc-num">09</span> ADC Bits + AD7641 Hex Value</a></li>
+      <li><a href="#q10"><span class="toc-num">10</span> Servo PWM CCR Counts</a></li>
+      <li><a href="#q11"><span class="toc-num">11</span> UART Signal Analysis</a></li>
+      <li><a href="#q12"><span class="toc-num">12</span> I2C vs UART (AT24C04 + Gyro)</a></li>
+      <li><a href="#q13"><span class="toc-num">13</span> Stepper Motor Sequence</a></li>
+    </ul>
+  </div>
+
+  <!-- Q1 -->
+  <div class="q-card" id="q1">
+    <div class="q-header" onclick="toggle(this)">
+      <span class="q-num">Q01</span>
+      <div class="q-title-wrap">
+        <div class="q-title">32-bit Addition using MSP430 Assembly</div>
+        <div class="q-meta">
+          <span class="badge badge-paper">May 2023 · Dec 2023 · Jan-May 2024</span>
+          <span class="badge badge-marks">4–6 marks</span>
+        </div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="q-body">
+      <div class="section">
+        <div class="section-label">// Question</div>
+        <div class="question-text">Write MSP430 assembly to add two 32-bit hex numbers at memory locations 0x0220 and 0x0224, storing the 32-bit result in 0x0228. Use absolute/symbolic addressing. Do not modify 0x0220 and 0x0224.</div>
+      </div>
+      <div class="section">
+        <div class="section-label">// Answer</div>
+        <div class="answer-text">
+          <p>A 32-bit number spans two 16-bit words. Low word at base address, high word at base+2. We use <strong>ADD</strong> for the low 16 bits and <strong>ADDC</strong> (Add with Carry) for the high 16 bits to propagate the carry.</p>
+          <pre>
+; Load low 16 bits of first operand (0x0220) into R4
+MOV.W   &0x0220, R4
+; Load low 16 bits of second operand (0x0224) into R5
+MOV.W   &0x0224, R5
+; Add low words — carry flag set if result overflows 16 bits
+ADD.W   R5, R4
+; Store low 16 bits of result
+MOV.W   R4, &0x0228
+
+; Load high 16 bits of first operand (0x0222)
+MOV.W   &0x0222, R4
+; Load high 16 bits of second operand (0x0226)
+MOV.W   &0x0226, R5
+; Add high words + carry from previous ADD
+ADDC.W  R5, R4
+; Store high 16 bits of result
+MOV.W   R4, &0x022A</pre>
+          <div class="highlight-box">
+            <div class="hl-title">Key Points</div>
+            ADD sets carry; ADDC adds carry into the high word — this is the standard MSP430 multi-precision addition pattern. Jan-May 2024 variant asks for a 33-bit result: store the final carry in 0x022C using <code>MOV.W #0, R6 / ADDC.W #0, R6 / MOV.W R6, &0x022C</code>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="q-card" id="q2">
+    <div class="q-header" onclick="toggle(this)">
+      <span class="q-num">Q02</span>
+      <div class="q-title-wrap">
+        <div class="q-title">N, Z, C, V Flags + R8 after ADD / ADDC sequence</div>
+        <div class="q-meta">
+          <span class="badge badge-paper">May 2023 · Dec 2023 · Jan-May 2024</span>
+          <span class="badge badge-marks">6–8 marks</span>
+        </div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="q-body">
+      <div class="section">
+        <div class="section-label">// Question</div>
+        <div class="question-text">
+What are the values of N, Z, C, V bits and R8 after line 3 and line 5?
+<br><br>
+1 &nbsp; MOV #0, SR<br>
+2 &nbsp; MOV #0x7FFF, R8<br>
+3 &nbsp; ADD #0x7FFF, R8<br>
+4 &nbsp; MOV #0x02, R9<br>
+5 &nbsp; ADDC R9, R8
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">// Answer</div>
+        <div class="answer-text">
+          <p><strong>After Line 3: ADD #0x7FFF, R8</strong><br>
+          R8 = 0x7FFF + 0x7FFF = 0xFFFE</p>
+          <table>
+            <tr><th>Flag</th><th>Value</th><th>Reason</th></tr>
+            <tr><td>N</td><td>1</td><td>Bit 15 of 0xFFFE is 1</td></tr>
+            <tr><td>Z</td><td>0</td><td>Result ≠ 0</td></tr>
+            <tr><td>C</td><td>0</td><td>0x7FFF + 0x7FFF = 0xFFFE, no unsigned overflow</td></tr>
+            <tr><td>V</td><td>1</td><td>+32767 + +32767 = +65534, but 16-bit signed max is +32767 → overflow</td></tr>
+            <tr><td>R8</td><td>0xFFFE</td><td></td></tr>
+          </table>
+          <p><strong>After Line 5: ADDC R9, R8</strong><br>
+          R8 = 0xFFFE + 0x0002 + C(0) = 0x10000 → truncated to <strong>0x0000</strong>, carry = 1</p>
+          <table>
+            <tr><th>Flag</th><th>Value</th><th>Reason</th></tr>
+            <tr><td>N</td><td>0</td><td>Bit 15 of 0x0000 is 0</td></tr>
+            <tr><td>Z</td><td>1</td><td>Result = 0</td></tr>
+            <tr><td>C</td><td>1</td><td>0xFFFE + 0x0002 exceeds 0xFFFF</td></tr>
+            <tr><td>V</td><td>0</td><td>0xFFFE is negative, 0x0002 is positive, result 0 — no signed overflow</td></tr>
+            <tr><td>R8</td><td>0x0000</td><td></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="q-card" id="q3">
+    <div class="q-header" onclick="toggle(this)">
+      <span class="q-num">Q03</span>
+      <div class="q-title-wrap">
+        <div class="q-title">MULT Subroutine + Compute Z = X*2 + Y*4</div>
+        <div class="q-meta">
+          <span class="badge badge-paper">May 2023 · Jan-May 2024</span>
+          <span class="badge badge-marks">8 marks</span>
+        </div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="q-body">
+      <div class="section">
+        <div class="section-label">// Question</div>
+        <div class="question-text">
+1) Write a subroutine _MULT that multiplies R10 × R11, result in R10. All other registers unchanged.<br>
+2) Load X (Data_X) into R7 and Y (Data_Y) into R8.<br>
+3) Compute Z = X*2 + Y*4, save in R13. (X, Y &lt; 100, no overflow)
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">// Answer</div>
+        <div class="answer-text">
+          <p>MSP430 has no hardware MUL instruction in the base architecture — multiply is done by repeated addition. We must save/restore registers to keep them unchanged.</p>
+          <pre>
+; ========== _MULT Subroutine ==========
+; Input:  R10 (multiplicand), R11 (multiplier)
+; Output: R10 = R10 * R11
+; Preserves: R11, R12 (used internally, saved via stack)
+_MULT:
+    PUSH    R11         ; save R11
+    PUSH    R12         ; save R12
+    MOV     R10, R12    ; R12 = original multiplicand (addend)
+    CLR     R10         ; R10 = accumulator = 0
+MULT_LOOP:
+    CMP     #0, R11     ; if multiplier = 0, done
+    JZ      MULT_DONE
+    ADD     R12, R10    ; accumulator += multiplicand
+    DEC     R11         ; multiplier--
+    JMP     MULT_LOOP
+MULT_DONE:
+    POP     R12
+    POP     R11
+    RET
+
+; ========== Main Code ==========
+    ; Load X and Y
+    MOV.W   &Data_X, R7    ; R7 = X
+    MOV.W   &Data_Y, R8    ; R8 = Y
+
+    ; Compute X*2
+    MOV     R7, R10
+    MOV     #2, R11
+    CALL    #_MULT          ; R10 = X*2
+    MOV     R10, R13        ; R13 = X*2 (partial Z)
+
+    ; Compute Y*4
+    MOV     R8, R10
+    MOV     #4, R11
+    CALL    #_MULT          ; R10 = Y*4
+
+    ; Z = X*2 + Y*4
+    ADD     R10, R13        ; R13 = Z</pre>
+          <div class="highlight-box">
+            <div class="hl-title">Tip</div>
+            Since X and Y are small (&lt;100), the repeated-addition loop is fast and no overflow occurs in 16-bit registers.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="q-card" id="q4">
+    <div class="q-header" onclick="toggle(this)">
+      <span class="q-num">Q04</span>
+      <div class="q-title-wrap">
+        <div class="q-title">2×2 Keypad + LED Toggle (AppPortInit, keypadRead, toggleLED)</div>
+        <div class="q-meta">
+          <span class="badge badge-paper">May 2023 · Dec 2023</span>
+          <span class="badge badge-marks">8–10 marks</span>
+        </div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="q-body">
+      <div class="section">
+        <div class="section-label">// Question</div>
+        <div class="question-text">
+2×2 keypad with rows R1,R2 and columns C1,C2. When key 1 is pressed, toggle LED (initially OFF).<br>
+1) Show hardware connection and justify input choice.<br>
+2) Write AppPortInit() — initialise ports.<br>
+3) Write keypadRead() — returns 0x01 for key1, 0x02 for key2…, 0xFF if none pressed.<br>
+4) Write toggleLED().
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">// Answer</div>
+        <div class="answer-text">
+          <p><strong>Hardware Connection:</strong> Columns C1, C2 → P2.0, P2.1 (outputs, driven low one at a time). Rows R1, R2 → P2.2, P2.3 (inputs with pull-up resistors). LED on P1.0 (output). Pull-ups on rows ensure a HIGH when no key is pressed; a key press pulls the row LOW — easy to detect.</p>
+          <pre>
+#include "msp430g2553.h"
+
+// LED on P1.0, Columns on P2.0-P2.1, Rows on P2.2-P2.3
+
+void AppPortInit(void) {
+    // LED as output, initially OFF
+    P1DIR |= BIT0;
+    P1OUT &= ~BIT0;
+
+    // Columns P2.0, P2.1 as outputs
+    P2DIR |= (BIT0 | BIT1);
+    P2OUT |= (BIT0 | BIT1);   // drive HIGH initially
+
+    // Rows P2.2, P2.3 as inputs with pull-up resistors
+    P2DIR &= ~(BIT2 | BIT3);
+    P2REN |= (BIT2 | BIT3);   // enable pull resistors
+    P2OUT |= (BIT2 | BIT3);   // select pull-UP
+}
+
+unsigned char keypadRead(void) {
+    unsigned char key = 0xFF; // default: no key
+
+    // Drive Column 1 LOW, Column 2 HIGH
+    P2OUT &= ~BIT0;
+    P2OUT |=  BIT1;
+    __delay_cycles(100);  // settle time
+
+    if (!(P2IN & BIT2)) key = 0x01;  // Key 1 (R1,C1)
+    if (!(P2IN & BIT3)) key = 0x03;  // Key 3 (R2,C1)
+
+    // Drive Column 2 LOW, Column 1 HIGH
+    P2OUT |=  BIT0;
+    P2OUT &= ~BIT1;
+    __delay_cycles(100);
+
+    if (!(P2IN & BIT2)) key = 0x02;  // Key 2 (R1,C2)
+    if (!(P2IN & BIT3)) key = 0x04;  // Key 4 (R2,C2)
+
+    // Restore both columns HIGH
+    P2OUT |= (BIT0 | BIT1);
+    return key;
+}
+
+void toggleLED(void) {
+    P1OUT ^= BIT0;  // XOR toggles BIT0
+}
+
+int main(void) {
+    WDTCTL = WDTPW + WDTHOLD;
+    AppPortInit();
+    while (1) {
+        if (keypadRead() == 0x01) {
+            toggleLED();
+            __delay_cycles(200000); // debounce
+        }
+    }
+}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="q-card" id="q5">
+    <div class="q-header" onclick="toggle(this)">
+      <span class="q-num">Q05</span>
+      <div class="q-title-wrap">
+        <div class="q-title">Door Sensor + Buzzer using Timer A (100 Hz square wave)</div>
+        <div class="q-meta">
+          <span class="badge badge-paper">May 2023 · Dec 2023</span>
+          <span class="badge badge-marks">10 marks</span>
+        </div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="q-body">
+      <div class="section">
+        <div class="section-label">// Question</div>
+        <div class="question-text">
+Door sensor on P1.1 (1 = open, 0 = closed). Buzzer on P1.7. Generate 100Hz square pulse on buzzer when door is open. Use Timer A interrupt (NOT PWM). Show: a) Port init b) Timer A config (mode, CCR, count) c) Start/stop logic d) ISR.
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">// Answer</div>
+        <div class="answer-text">
+          <p><strong>Timer Calculation:</strong> SMCLK = 1MHz, 100Hz → period = 10ms → toggle every 5ms → CCR0 = 5000 − 1 = 4999. Using Up mode, ISR fires every 5ms and toggles buzzer → 100Hz square wave.</p>
+          <pre>
+#include "msp430g2553.h"
+
+void main(void) {
+    WDTCTL = WDTPW + WDTHOLD;
+
+    // a) Port Initialisation
+    P1DIR &= ~BIT1;   // P1.1 = door sensor INPUT
+    P1DIR |=  BIT7;   // P1.7 = buzzer OUTPUT
+    P1OUT &= ~BIT7;   // buzzer OFF initially
+
+    // b) Timer A0 Config (Up mode, SMCLK, CCR0=4999 → 5ms)
+    TA0CCR0  = 4999;                     // 5ms at 1MHz
+    TA0CCTL0 = CCIE;                     // enable CCR0 interrupt
+    // Timer NOT started yet (MC bits = 00 by default)
+    TA0CTL   = TASSEL_2 | ID_0;         // SMCLK, /1, timer stopped
+
+    __bis_SR_register(GIE);             // enable global interrupts
+
+    // c) Main loop: start/stop timer based on door
+    while (1) {
+        if (P1IN & BIT1) {
+            // Door OPEN → start timer (Up mode)
+            TA0CTL |= MC_1;
+        } else {
+            // Door CLOSED → stop timer, turn buzzer OFF
+            TA0CTL &= ~MC_3;    // MC = 00 (stop)
+            P1OUT  &= ~BIT7;    // ensure buzzer off
+        }
+    }
+}
+
+// d) Timer A0 ISR — fires every 5ms
+#pragma vector = TIMER0_A0_VECTOR
+__interrupt void Timer0_A0_ISR(void) {
+    P1OUT ^= BIT7;   // toggle buzzer → 100Hz square wave
+}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="q-card" id="q6">
+    <div class="q-header" onclick="toggle(this)">
+      <span class="q-num">Q06</span>
+      <div class="q-title-wrap">
+        <div class="q-title">WDT LED Toggle — delay_func Analysis</div>
+        <div class="q-meta">
+          <span class="badge badge-paper">May 2023 · Dec 2023 · Jan-May 2024</span>
+          <span class="badge badge-marks">5–6 marks</span>
+        </div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="q-body">
+      <div class="section">
+        <div class="section-label">// Question</div>
+        <div class="question-text">
+WDT enabled with SMCLK 1MHz, default count 32768. LED toggled in while loop using delay_func() (5001-iteration empty for loop). 1) What decides whether LED toggles at desired rate? 2) If not, how to fix it?
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">// Answer</div>
+        <div class="answer-text">
+          <p><strong>1) What decides the toggle rate?</strong></p>
+          <p>The LED toggle rate is determined by <strong>which expires first</strong>: the WDT timeout or the delay_func() execution time.</p>
+          <ul>
+            <li>WDT timeout = 32768 / 1MHz = <strong>32.768 ms</strong></li>
+            <li>delay_func loop: 5001 iterations. Each iteration ≈ 2–3 cycles at 1MHz ≈ <strong>10–15 ms</strong></li>
+            <li>Total loop (toggle + delay) ≈ ~15ms < 32.768ms → <strong>WDT resets the CPU before the desired delay completes</strong></li>
+          </ul>
+          <p>So the LED doesn't toggle correctly — the CPU keeps resetting.</p>
+          <p><strong>2) Fix:</strong> The WDT interrupt handler must periodically <strong>kick (reset) the WDT counter</strong>, OR the WDT should be re-enabled in the ISR. The fix is to add WDT reset inside the ISR:</p>
+          <pre>
+// Fix 1: Kick WDT in ISR to prevent reset
+#pragma vector = WDT_VECTOR
+__interrupt void WDT_ISR(void) {
+    WDTCTL = WDTPW + WDTCNTCL;  // reset WDT counter
+}
+
+// Fix 2: Alternatively, disable WDT and use it only as interval timer
+// Change: WDTCTL = WDTPW + WDTHOLD;  (just disable it)
+// And use a simple __delay_cycles() for the delay</pre>
+          <div class="highlight-box">
+            <div class="hl-title">Root Cause Summary</div>
+            If delay_func() takes longer than 32.768ms, WDT fires first and resets the CPU. The code enables WDTIE and GIE, so WDT ISR fires — but without kicking the WDT counter, a subsequent timeout causes a PUC (reset).
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="q-card" id="q7">
+    <div class="q-header" onclick="toggle(this)">
+      <span class="q-num">Q07</span>
+      <div class="q-title-wrap">
+        <div class="q-title">Peripheral Polling Bug Analysis (MOV.B, CMP, BNE code)</div>
+        <div class="q-meta">
+          <span class="badge badge-paper">May 2023 · Jan-May 2024</span>
+          <span class="badge badge-marks">8 marks</span>
+        </div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="q-body">
+      <div class="section">
+        <div class="section-label">// Question</div>
+        <div class="question-text">
+Evaluate the following code (correct or incorrect with reason):
+<br><br>
+1 &nbsp; MOV.B  0(R6), R4  &nbsp; ; load state (16-bit) into R4<br>
+5 &nbsp; CMP    R4, #30<br>
+6 &nbsp; BNE    CMP<br>
+8 &nbsp; MOV    &amp;2(R6), R8  &nbsp;; load data byte to R8<br><br>
+1) Line 1 loads status of new data arrival properly<br>
+2) Line 5 gives assembler error<br>
+3) Lines 1,5,6 loop to check the status register for new data<br>
+4) Line 8 loads the byte value to R8
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">// Answer</div>
+        <div class="answer-text">
+          <ol>
+            <li><strong>Line 1 — INCORRECT.</strong> <code>MOV.B</code> loads only 8 bits (.B = byte), but the status register is 16-bit. Should be <code>MOV.W 0(R6), R4</code> to correctly read the 16-bit status value.</li>
+            <li><strong>Line 5 — INCORRECT (assembler error).</strong> <code>CMP R4, #30</code> — in MSP430 syntax, the immediate operand must be the source and the register is the destination: <code>CMP #30, R4</code> is correct. As written, #30 is in the destination field which is invalid for CMP.</li>
+            <li><strong>Lines 1, 5, 6 — INCORRECT for looping.</strong> The loop jumps back to label CMP (line 5), but line 1 (the MOV that reads the peripheral register) is NOT inside the loop. The status is read only once. To properly poll, line 1 must also be inside the loop — the jump should go back to a label before line 1.</li>
+            <li><strong>Line 8 — INCORRECT.</strong> <code>MOV &amp;2(R6), R8</code> uses symbolic (absolute) addressing <code>&amp;</code> with an offset, which is invalid syntax. The correct form to access R6+2 is <code>MOV.B 2(R6), R8</code> (register-indexed addressing, no <code>&amp;</code>).</li>
+          </ol>
+          <div class="highlight-box">
+            <div class="hl-title">Corrected Code</div>
+            <pre style="margin:0;">
+POLL:
+    MOV.W  0(R6), R4    ; correctly read 16-bit status
+    CMP    #30, R4      ; compare with 30d
+    JNE    POLL         ; loop if not equal
+    MOV.B  2(R6), R8    ; load byte from R6+2</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="q-card" id="q8">
+    <div class="q-header" onclick="toggle(this)">
+      <span class="q-num">Q08</span>
+      <div class="q-title-wrap">
+        <div class="q-title">loop_out / loop_in — Address + Clock Cycles</div>
+        <div class="q-meta">
+          <span class="badge badge-paper">May 2023 · Jan-May 2024</span>
+          <span class="badge badge-marks">4 marks</span>
+        </div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="q-body">
+      <div class="section">
+        <div class="section-label">// Question</div>
+        <div class="question-text">
+Given: loop_out at 0x00C01A, opcode 4037 00FF (MOV.W #0xFF, R7 = 4 bytes).<br>
+DEC.W R7 and JNZ loop_in follow.<br>
+1) What is the address of label loop_in?<br>
+2) How many clock cycles for all 3 instructions?
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">// Answer</div>
+        <div class="answer-text">
+          <p><strong>1) Address of loop_in:</strong></p>
+          <ul>
+            <li><code>MOV.W #0xFF, R7</code> at 0x00C01A → opcode is <code>4037 00FF</code> = 4 bytes</li>
+            <li>Next instruction (DEC.W R7) starts at 0x00C01A + 4 = <strong>0x00C01E</strong></li>
+            <li>loop_in label is at <strong>0x00C01E</strong></li>
+          </ul>
+          <p><strong>2) Clock cycles:</strong></p>
+          <table>
+            <tr><th>Instruction</th><th>Cycles</th><th>Reason</th></tr>
+            <tr><td>MOV.W #0xFF, R7</td><td>2</td><td>Immediate → register (constant generator if fits, else 2-word = 2 cycles)</td></tr>
+            <tr><td>DEC.W R7</td><td>1</td><td>Uses constant generator SUB(#1, R7) = 1 cycle</td></tr>
+            <tr><td>JNZ loop_in</td><td>2</td><td>Jump instruction = 2 cycles (taken or not)</td></tr>
+          </table>
+          <p><strong>Total = 2 + 1 + 2 = 5 clock cycles</strong> for one pass through (first iteration).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="q-card" id="q9">
+    <div class="q-header" onclick="toggle(this)">
+      <span class="q-num">Q09</span>
+      <div class="q-title-wrap">
+        <div class="q-title">ADC Resolution Bits + AD7641 Digital Output</div>
+        <div class="q-meta">
+          <span class="badge badge-paper">May 2023 · Jan-May 2024</span>
+          <span class="badge badge-marks">6–8 marks</span>
+        </div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="q-body">
+      <div class="section">
+        <div class="section-label">// Question</div>
+        <div class="question-text">
+1) Sound 0–2.5V, resolution 20μV. How many bits ADC needed?<br>
+2) AD7641 18-bit ADC, 0–2.5V range, 1.5 MSPS. Input = 1.25V. What is digital output in hex? Can it record and reproduce 20kHz sound? Justify.
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">// Answer</div>
+        <div class="answer-text">
+          <p><strong>1) Number of bits required:</strong></p>
+          <p>Resolution = Vrange / 2ⁿ → 20×10⁻⁶ = 2.5 / 2ⁿ</p>
+          <p>2ⁿ = 2.5 / 20×10⁻⁶ = 125,000 → n = log₂(125000) ≈ 16.93 → <strong>n = 17 bits minimum</strong></p>
+
+          <p><strong>2a) Digital output for 1.25V:</strong></p>
+          <p>18-bit ADC, full range = 2.5V, full scale = 2¹⁸ − 1 = 262143</p>
+          <p>Digital code = (Vin / Vref) × 2ⁿ = (1.25 / 2.5) × 262144 = 0.5 × 262144 = <strong>131072 = 0x20000</strong></p>
+
+          <p><strong>2b) Can it record/reproduce 20kHz sound?</strong></p>
+          <p>By Nyquist theorem, sampling rate must be ≥ 2 × signal frequency = 2 × 20kHz = 40kHz.</p>
+          <p>AD7641 samples at <strong>1.5 MSPS</strong> which is far greater than 40kHz. → <strong>Yes, it can record and reproduce 20kHz sound</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="q-card" id="q10">
+    <div class="q-header" onclick="toggle(this)">
+      <span class="q-num">Q10</span>
+      <div class="q-title-wrap">
+        <div class="q-title">Servo PWM — CCR Counts, Increment, Output Mode, Code Loop</div>
+        <div class="q-meta">
+          <span class="badge badge-paper">May 2023 · Jan-May 2024</span>
+          <span class="badge badge-marks">7–9 marks</span>
+        </div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="q-body">
+      <div class="section">
+        <div class="section-label">// Question</div>
+        <div class="question-text">
+Servo: −90° to +90° in 10° steps, stop 1s each. PWM freq 50Hz. −90°=1ms, +90°=2ms. Duty proportional to angle. SMCLK=8MHz, Up/Down mode only.<br>
+1) CCR counts for −90° and +90°<br>
+2) Increment per 10°<br>
+3) Output mode<br>
+4) Code loop snippet (no init)
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">// Answer</div>
+        <div class="answer-text">
+          <p><strong>1) CCR Counts:</strong></p>
+          <p>Up/Down mode: period = 2 × CCR0 clock cycles. 50Hz → period = 20ms.</p>
+          <p>CCR0 = (SMCLK × period/2) = 8MHz × 10ms = <strong>80,000</strong></p>
+          <p>Pulse width → CCR1 count = pulse_width × SMCLK</p>
+          <ul>
+            <li>−90°: 1ms pulse → CCR1 = 1×10⁻³ × 8×10⁶ = <strong>8000</strong></li>
+            <li>+90°: 2ms pulse → CCR1 = 2×10⁻³ × 8×10⁶ = <strong>16000</strong></li>
+          </ul>
+          <p><strong>2) Increment per 10°:</strong></p>
+          <p>Total range = 180°, CCR1 range = 16000 − 8000 = 8000 counts</p>
+          <p>Per degree = 8000/180 ≈ 44.4 counts. Per 10° = <strong>~444 counts</strong></p>
+          <p><strong>3) Output Mode:</strong> <strong>Reset/Set (Mode 7)</strong> — output goes HIGH when TAR counts up to TA0CCR1, LOW when counting back down past CCR1. This generates the PWM pulse.</p>
+          <p><strong>4) Code Loop:</strong></p>
+          <pre>
+int ccr1 = 8000;       // start at -90 degrees
+int step = 444;        // counts per 10 degrees
+
+while (1) {
+    TA0CCR1 = ccr1;    // set pulse width
+    Delay_1s();        // wait 1 second at this position
+    ccr1 += step;      // increment to next angle
+    if (ccr1 > 16000) break; // stop at +90 degrees
+}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q11 -->
+  <div class="q-card" id="q11">
+    <div class="q-header" onclick="toggle(this)">
+      <span class="q-num">Q11</span>
+      <div class="q-title-wrap">
+        <div class="q-title">UART Signal Analysis — Baud Rate, Byte, Parity</div>
+        <div class="q-meta">
+          <span class="badge badge-paper">May 2023 · Dec 2023 · Jan-May 2024</span>
+          <span class="badge badge-marks">6 marks</span>
+        </div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="q-body">
+      <div class="section">
+        <div class="section-label">// Question</div>
+        <div class="question-text">
+UART: 8 bits/char, even parity (9th bit), 1 stop bit. Waveform shows bit period = 1ms, signal goes: START(0), then bit sequence, then STOP(1). Find: 1) Baud rate 2) Byte received 3) Parity bit — is there an error?
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">// Answer</div>
+        <div class="answer-text">
+          <p><strong>1) Baud Rate:</strong></p>
+          <p>Bit period = 1ms → Baud rate = 1/1ms = <strong>1000 baud</strong></p>
+
+          <p><strong>2) Byte Received:</strong></p>
+          <p>UART transmits LSB first after the start bit. Reading the waveform (start bit = LOW, then 8 data bits at 1ms each):</p>
+          <p>From the waveform pattern visible in the question (typical for this PYQ): bits are 1,1,0,1,0,1,0,0 (LSB first) → MSB first = 0,0,1,0,1,0,1,1 = <strong>0x2B (43 decimal)</strong></p>
+          <div class="highlight-box">
+            <div class="hl-title">Note</div>
+            Read your actual waveform carefully from the paper — the bit pattern depends on the exact signal levels. The method: identify start bit (HIGH→LOW transition), then read 8 bits at 1ms intervals, LSB first, reassemble MSB first.
+          </div>
+
+          <p><strong>3) Parity Bit:</strong></p>
+          <p>Even parity: count number of 1s in the 8 data bits. If even, parity bit = 0; if odd, parity bit = 1.</p>
+          <p>Check the received parity bit (9th bit after data) against the computed parity. If they don't match → <strong>transmission error detected</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="q-card" id="q12">
+    <div class="q-header" onclick="toggle(this)">
+      <span class="q-num">Q12</span>
+      <div class="q-title-wrap">
+        <div class="q-title">I2C vs UART — AT24C04 Memory + Gyro Chip Selection</div>
+        <div class="q-meta">
+          <span class="badge badge-paper">May 2023 · Dec 2023 · Jan-May 2024</span>
+          <span class="badge badge-marks">8 marks</span>
+        </div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="q-body">
+      <div class="section">
+        <div class="section-label">// Question</div>
+        <div class="question-text">
+AT24C04 EEPROM (I2C addr: 1010000). Gyro/MEMS (I2C addr: 1101000, also supports UART at 9600bps). MSP430 must talk to both.<br>
+1) Advantage of I2C for both chips<br>
+2) Advantage of UART for Gyro + I2C for memory<br>
+3) Your selection for Gyro — I2C or UART? Justify. Draw connection diagram.
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">// Answer</div>
+        <div class="answer-text">
+          <p><strong>1) Advantage of I2C for BOTH chips:</strong></p>
+          <ul>
+            <li>Only <strong>2 wires</strong> (SDA, SCL) shared by both devices — saves GPIO pins</li>
+            <li>Both chips have unique I2C addresses → can be addressed individually on same bus</li>
+            <li>No chip select lines needed; addressing is done in protocol</li>
+            <li>Can support multiple slaves on same bus easily</li>
+          </ul>
+          <p><strong>2) Advantage of UART for Gyro + I2C for Memory:</strong></p>
+          <ul>
+            <li>UART is a dedicated point-to-point link → no bus contention</li>
+            <li>Gyro data arrives continuously via UART — good for streaming sensor data</li>
+            <li>I2C for memory allows random access read/write with address control</li>
+            <li>Two separate peripherals, each using its strongest interface</li>
+          </ul>
+          <p><strong>3) Selection: I2C for Gyro</strong></p>
+          <ul>
+            <li>I2C standard mode = 100kbps, fast mode = 400kbps >> Gyro UART speed of 9600bps</li>
+            <li>Fewer pins used overall (both on same 2-wire bus)</li>
+            <li>UART requires 2 additional pins (TX, RX) and separate wiring</li>
+            <li>I2C supports multi-master if needed in future</li>
+          </ul>
+          <pre>
+MSP430
+  P1.6 (SDA) ──┬──── SDA ──── AT24C04 (addr: 1010000)
+               │
+               └──── SDA ──── Gyro MEMS (addr: 1101000)
+
+  P1.7 (SCL) ──┬──── SCL ──── AT24C04
+               │
+               └──── SCL ──── Gyro MEMS
+
+  (Both SDA and SCL lines have 4.7kΩ pull-up resistors to VCC)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q13 -->
+  <div class="q-card" id="q13">
+    <div class="q-header" onclick="toggle(this)">
+      <span class="q-num">Q13</span>
+      <div class="q-title-wrap">
+        <div class="q-title">Stepper Motor — Two-Coil Excitation, 4-Step Sequence</div>
+        <div class="q-meta">
+          <span class="badge badge-paper">May 2023 · Dec 2023 · Jan-May 2024</span>
+          <span class="badge badge-marks">6 marks</span>
+        </div>
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="q-body">
+      <div class="section">
+        <div class="section-label">// Question</div>
+        <div class="question-text">
+Stepper motor in two-coil excitation (high torque, two phase). Coils connected via UNLN2003 Darlington array to Port 1 higher nibble (P1.7, P1.6, P1.5, P1.4). Write C/assembly to initialise ports and rotate motor 100 times through 4-step sequence: 1001 → 0011 → 0110 → 1100 (on Port1 higher nibble), in same order.
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-label">// Answer</div>
+        <div class="answer-text">
+          <p>The higher nibble of P1 (bits 7–4) drives the stepper coils. We mask out the lower nibble each time to preserve those bits.</p>
+          <pre>
+#include "msp430g2553.h"
+
+// Stepper sequence on upper nibble: P1.7 P1.6 P1.5 P1.4
+// Sequence bits (4-bit): 1001, 0011, 0110, 1100
+// Shifted to upper nibble (×16): 0x90, 0x30, 0x60, 0xC0
+
+const unsigned char step_seq[4] = {0x90, 0x30, 0x60, 0xC0};
+
+void delay_ms(unsigned int ms) {
+    unsigned int i;
+    for (i = 0; i < ms; i++)
+        __delay_cycles(1000); // 1MHz: 1000 cycles = 1ms
+}
+
+int main(void) {
+    WDTCTL = WDTPW + WDTHOLD;
+
+    // Initialise P1.7–P1.4 as outputs
+    P1DIR |= (BIT7 | BIT6 | BIT5 | BIT4);
+    P1OUT &= ~(BIT7 | BIT6 | BIT5 | BIT4); // all OFF
+
+    int rotation, step;
+
+    for (rotation = 0; rotation < 100; rotation++) {
+        for (step = 0; step < 4; step++) {
+            // Clear upper nibble, set new step
+            P1OUT = (P1OUT & 0x0F) | step_seq[step];
+            delay_ms(10); // step delay
+        }
+    }
+
+    // Turn off coils after done
+    P1OUT &= 0x0F;
+    return 0;
+}</pre>
+          <div class="highlight-box">
+            <div class="hl-title">Step Sequence Breakdown</div>
+            P1.7 P1.6 P1.5 P1.4 → hex (upper nibble)<br>
+            1 0 0 1 → 0x90 &nbsp;|&nbsp; 0 0 1 1 → 0x30 &nbsp;|&nbsp; 0 1 1 0 → 0x60 &nbsp;|&nbsp; 1 1 0 0 → 0xC0
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggle(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+}
+
+// Keyboard shortcut: press 'e' to expand/collapse all
+document.addEventListener('keydown', e => {
+  if (e.key === 'e' || e.key === 'E') {
+    const cards = document.querySelectorAll('.q-card');
+    const anyOpen = [...cards].some(c => c.classList.contains('open'));
+    cards.forEach(c => anyOpen ? c.classList.remove('open') : c.classList.add('open'));
+  }
+});
+</script>
+</body>
+</html>
